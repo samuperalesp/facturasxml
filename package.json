@@ -2,11 +2,11 @@
   "name": "facturas-xml",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n front,back -c blue,green \"cd frontend && vite\" \"cd backend && npm run dev\"",
-    "dev:front": "cd frontend && vite",
-    "dev:back": "cd backend && npm run dev",
-    "build": "cd frontend && npm run build && cd ../backend && npm run build",
-    "preview": "cd frontend && vite preview"
+    "dev": "concurrently -n front,back -c blue,green \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\"",
+    "dev:front": "npm run dev --prefix frontend",
+    "dev:back": "npm run dev --prefix backend",
+    "build": "npm run build --prefix frontend && npm run build --prefix backend",
+    "preview": "npm run preview --prefix frontend"
   },
   "devDependencies": {
     "concurrently": "^10.0.3"

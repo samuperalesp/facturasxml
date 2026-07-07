@@ -14,6 +14,7 @@ export interface Invoice {
   xmlPath?: string
   cufe?: string
   importada: string
+  periodo?: string
 }
 
 export interface Conciliation {
@@ -32,9 +33,40 @@ export interface Conciliation {
   fechaVenta: string
   puntaje: number
   motivo: string
+  periodo?: string
 }
 
 export interface AppConfig {
   nitEmpresa: string
   nombreEmpresa: string
+}
+
+export interface PeriodSummary {
+  periodo: string
+  mes: number
+  anio: number
+  totalCompras: number
+  totalVentas: number
+  totalConciliado: number
+  totalPendiente: number
+  countCompras: number
+  countVentas: number
+  countConciliadas: number
+  countPendientes: number
+  updatedAt: string
+}
+
+export interface PeriodReport {
+  periodo: string
+  mes: number
+  anio: number
+  conciliaciones: Conciliation[]
+  comprasSinVenta: Conciliation[]
+  ventasSinCompra: Conciliation[]
+  conciliadas: Conciliation[]
+  pendientes: Conciliation[]
+  totalCompra: number
+  totalVenta: number
+  diferencia: number
+  updatedAt: string
 }

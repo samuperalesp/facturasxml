@@ -89,6 +89,14 @@ function downloadExport(url: string, filename: string) {
   a.click()
 }
 
+function exportInformeMensual(mes: number, anio: number) {
+  const params = new URLSearchParams()
+  params.set('mes', String(mes))
+  params.set('anio', String(anio))
+  const nombre = `Informe_Mensual_${new Date(anio, mes - 1).toLocaleString('es-ES', { month: 'long' })}_${anio}.xlsx`
+  downloadExport(`${API}/reportes/informe-mensual?${params}`, nombre)
+}
+
 function exportListaMaestra(mes?: number, anio?: number) {
   const params = new URLSearchParams()
   params.set('exportar', 'true')
@@ -121,4 +129,5 @@ export const api = {
   getConfig,
   exportListaMaestra,
   exportReporte,
+  exportInformeMensual,
 }

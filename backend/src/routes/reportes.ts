@@ -1,15 +1,43 @@
 import { Router } from 'express'
-import * as storage from '../storage/jsonStorage.js'
+import * as storage from '../storage/index.js'
 import { generateMasterListXLSX, generateReportXLSX } from '../services/excelExportService.js'
+import { generateExecutiveReport } from '../services/executiveReportService.js'
 
 const router = Router()
 
+router.get('/reportes/informe-mensual', async (req, res) => {
+  try {
+    const mes = Number(req.query.mes)
+    const anio = Number(req.query.anio)
+    if (!mes || !anio) {
+      return res.status(400).json({ error: 'mes y anio son requeridos' })
+    }
+    const buffer = await generateExecutiveReport(mes, anio)
+    const nombre = `Informe_Mensual_${new Date(anio, mes - 1).toLocaleString('es-ES', { month: 'long' })}_${anio}.xlsx`
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"`)
+    return res.send(buffer)
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Error al generar informe mensual' })
+  }
+})
+
 router.get('/lista-maestra', async (req, res) => {
   try {
-    const conciliaciones = await storage.getConciliaciones()
     const mes = req.query.mes ? Number(req.query.mes) : undefined
     const anio = req.query.anio ? Number(req.query.anio) : undefined
+    const exportar = req.query.exportar === 'true'
 
+    if (mes && anio && !exportar) {
+      const report = await storage.getPeriodReport(mes, anio)
+      if (report) {
+        res.json(report.conciliaciones)
+        return
+      }
+    }
+
+    const conciliaciones = await storage.getConciliaciones(mes, anio)
     let filtered = conciliaciones
     if (mes || anio) {
       filtered = conciliaciones.filter(c => {
@@ -22,7 +50,6 @@ router.get('/lista-maestra', async (req, res) => {
       })
     }
 
-    const exportar = req.query.exportar === 'true'
     if (exportar) {
       const buffer = generateMasterListXLSX(filtered)
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
@@ -39,7 +66,6 @@ router.get('/lista-maestra', async (req, res) => {
 
 router.get('/reportes/:tipo', async (req, res) => {
   try {
-    const conciliaciones = await storage.getConciliaciones()
     const tipo = req.params.tipo
     const mes = req.query.mes ? Number(req.query.mes) : undefined
     const anio = req.query.anio ? Number(req.query.anio) : undefined
@@ -47,15 +73,14 @@ router.get('/reportes/:tipo', async (req, res) => {
     const cliente = req.query.cliente as string | undefined
     const paciente = req.query.paciente as string | undefined
     const estado = req.query.estado as string | undefined
+    const exportar = req.query.exportar === 'true'
 
+    let conciliaciones = await storage.getConciliaciones(mes, anio)
+
+    // Aplicar filtros extra
     let filtered = conciliaciones
-    if (mes || anio || proveedor || cliente || paciente || estado) {
+    if (proveedor || cliente || paciente || estado) {
       filtered = conciliaciones.filter(c => {
-        const fecha = c.fechaCompra || c.fechaVenta
-        if (!fecha) return false
-        const d = new Date(fecha)
-        if (mes && d.getMonth() + 1 !== mes) return false
-        if (anio && d.getFullYear() !== anio) return false
         if (proveedor && !c.proveedor.toLowerCase().includes(proveedor.toLowerCase())) return false
         if (cliente && !c.cliente.toLowerCase().includes(cliente.toLowerCase())) return false
         if (paciente && !c.paciente.toLowerCase().includes(paciente.toLowerCase())) return false
@@ -119,7 +144,6 @@ router.get('/reportes/:tipo', async (req, res) => {
         return res.status(400).json({ error: 'Tipo de reporte inválido' })
     }
 
-    const exportar = req.query.exportar === 'true'
     if (exportar) {
       const buffer = generateReportXLSX(data, tipo)
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')

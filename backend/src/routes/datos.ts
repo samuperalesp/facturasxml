@@ -1,36 +1,14 @@
 import { Router } from 'express'
-import * as storage from '../storage/jsonStorage.js'
+import * as storage from '../storage/index.js'
 
 const router = Router()
 
-router.get('/', async (_req, res) => {
-  try {
-    const [compras, ventas] = await Promise.all([
-      storage.getCompras(),
-      storage.getVentas(),
-    ])
-    res.json({ compras, ventas })
-  } catch (e) {
-    console.error(e)
-    res.status(500).json({ error: 'Error al obtener datos' })
-  }
-})
-
 router.get('/compras', async (req, res) => {
   try {
-    const compras = await storage.getCompras()
     const mes = req.query.mes ? Number(req.query.mes) : undefined
     const anio = req.query.anio ? Number(req.query.anio) : undefined
-    let filtered = compras
-    if (mes || anio) {
-      filtered = compras.filter(c => {
-        const d = new Date(c.fecha)
-        if (mes && d.getMonth() + 1 !== mes) return false
-        if (anio && d.getFullYear() !== anio) return false
-        return true
-      })
-    }
-    res.json(filtered)
+    const compras = await storage.getInvoicesByPeriod('compra', mes, anio)
+    res.json(compras)
   } catch (e) {
     console.error(e)
     res.status(500).json({ error: 'Error al obtener compras' })
@@ -39,19 +17,10 @@ router.get('/compras', async (req, res) => {
 
 router.get('/ventas', async (req, res) => {
   try {
-    const ventas = await storage.getVentas()
     const mes = req.query.mes ? Number(req.query.mes) : undefined
     const anio = req.query.anio ? Number(req.query.anio) : undefined
-    let filtered = ventas
-    if (mes || anio) {
-      filtered = ventas.filter(v => {
-        const d = new Date(v.fecha)
-        if (mes && d.getMonth() + 1 !== mes) return false
-        if (anio && d.getFullYear() !== anio) return false
-        return true
-      })
-    }
-    res.json(filtered)
+    const ventas = await storage.getInvoicesByPeriod('venta', mes, anio)
+    res.json(ventas)
   } catch (e) {
     console.error(e)
     res.status(500).json({ error: 'Error al obtener ventas' })
@@ -70,36 +39,48 @@ router.get('/config', async (_req, res) => {
 
 router.get('/resumen', async (req, res) => {
   try {
-    const [compras, ventas, conciliaciones] = await Promise.all([
-      storage.getCompras(),
-      storage.getVentas(),
-      storage.getConciliaciones(),
-    ])
     const mes = req.query.mes ? Number(req.query.mes) : undefined
     const anio = req.query.anio ? Number(req.query.anio) : undefined
 
-    const filterByPeriod = <T extends { fecha: string }>(items: T[]) => {
-      if (!mes && !anio) return items
-      return items.filter(i => {
-        const d = new Date(i.fecha)
-        if (mes && d.getMonth() + 1 !== mes) return false
-        if (anio && d.getFullYear() !== anio) return false
-        return true
-      })
+    // Lectura optimizada: 1 documento de summary en lugar de recalcular
+    if (mes && anio) {
+      const summary = await storage.getSummary(mes, anio)
+      if (summary) {
+        res.json({
+          comprasCargadas: summary.countCompras,
+          ventasCargadas: summary.countVentas,
+          conciliadas: summary.countConciliadas,
+          pendientes: summary.countPendientes,
+        })
+        return
+      }
     }
 
-    const comprasFiltradas = filterByPeriod(compras)
-    const ventasFiltradas = filterByPeriod(ventas)
-
-    const conciliadas = conciliaciones.filter(c => c.estado === 'conciliada')
-    const pendientes = conciliaciones.filter(c => c.estado !== 'conciliada')
-
-    res.json({
-      comprasCargadas: comprasFiltradas.length,
-      ventasCargadas: ventasFiltradas.length,
-      conciliadas: conciliadas.length,
-      pendientes: pendientes.length,
-    })
+    // Fallback: calcular desde los datos crudos si no hay resumen pre-calculado
+    if (mes && anio) {
+      const [compras, ventas, conciliaciones] = await Promise.all([
+        storage.getInvoicesByPeriod('compra', mes, anio),
+        storage.getInvoicesByPeriod('venta', mes, anio),
+        storage.getConciliaciones(mes, anio),
+      ])
+      res.json({
+        comprasCargadas: compras.length,
+        ventasCargadas: ventas.length,
+        conciliadas: conciliaciones.filter(c => c.estado === 'conciliada').length,
+        pendientes: conciliaciones.filter(c => c.estado !== 'conciliada').length,
+      })
+    } else {
+      const [compras, ventas] = await Promise.all([
+        storage.getCompras(),
+        storage.getVentas(),
+      ])
+      res.json({
+        comprasCargadas: compras.length,
+        ventasCargadas: ventas.length,
+        conciliadas: 0,
+        pendientes: 0,
+      })
+    }
   } catch (e) {
     console.error(e)
     res.status(500).json({ error: 'Error al obtener resumen' })

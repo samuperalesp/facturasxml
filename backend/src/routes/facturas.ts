@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import multer from 'multer'
-import * as storage from '../storage/jsonStorage.js'
+import * as storage from '../storage/index.js'
 import { parseXMLFile } from '../services/xmlParser.js'
+import { recalculateAllForInvoices } from '../services/summaryService.js'
 import type { Invoice } from '../models/invoice.js'
 
 const router = Router()
@@ -36,10 +37,11 @@ router.post('/importar', (req, res, next) => {
     }
 
     const config = await storage.getConfig()
-    const existing = tipo === 'compra' ? await storage.getCompras() : await storage.getVentas()
+    const existing = await storage.getInvoicesByPeriod(tipo as 'compra' | 'venta')
     const files = req.files as Express.Multer.File[]
     const nuevos: Invoice[] = []
     const errores: string[] = []
+    const existingFacturas = new Set(existing.map(e => e.factura))
 
     for (const file of files) {
       try {
@@ -50,8 +52,7 @@ router.post('/importar', (req, res, next) => {
           continue
         }
 
-        const exists = existing.some(e => e.factura === invoice.factura)
-        if (exists) {
+        if (existingFacturas.has(invoice.factura)) {
           errores.push(`${file.originalname}: ya importada`)
           continue
         }
@@ -63,12 +64,8 @@ router.post('/importar', (req, res, next) => {
     }
 
     if (nuevos.length > 0) {
-      const updated = [...existing, ...nuevos]
-      if (tipo === 'compra') {
-        await storage.saveCompras(updated)
-      } else {
-        await storage.saveVentas(updated)
-      }
+      await storage.saveInvoices(nuevos)
+      await recalculateAllForInvoices(nuevos)
     }
 
     res.json({
