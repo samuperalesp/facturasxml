@@ -2006,5 +2006,50 @@
     "xmlPath": "FERP10721.xml",
     "cufe": "2e51033a4a7147dca617753a07ec6317329766ccf1b7fbfee8b6f749fcf980842ec9fb1cccbb97b989f78ef59469e923",
     "importada": "2026-07-04T20:00:12.767Z"
+  },
+  {
+    "id": "FERP10728_2026-06-30",
+    "factura": "FERP10728",
+    "fecha": "2026-06-30",
+    "proveedor": "GENEFIX S.A.S",
+    "nitProveedor": "901451514",
+    "paciente": "JOSE RODRIGO GARCIA CORREDOR",
+    "documentoPaciente": "80844068",
+    "medico": "HEBERTH GONZALEZ",
+    "valor": 825120,
+    "tipo": "compra",
+    "xmlPath": "FERP10728.xml",
+    "cufe": "23283e3519be8a7b7684c29c5267fcbb03a0feb1f28911683beaa396244bf69794b0e5907a50db6506297bb7c80a0155",
+    "importada": "2026-07-09T04:00:20.076Z"
+  },
+  {
+    "id": "FERP10768_2026-07-02",
+    "factura": "FERP10768",
+    "fecha": "2026-07-02",
+    "proveedor": "GENEFIX S.A.S",
+    "nitProveedor": "901451514",
+    "paciente": "GLORIA EDITH LINARES BARRERA",
+    "documentoPaciente": "21191012",
+    "medico": "RAMON ARTURO RODRIGUEZ",
+    "valor": 2350822,
+    "tipo": "compra",
+    "xmlPath": "FERP10768.xml",
+    "cufe": "03600b6167eccda9179c118cf7596550d93a2c64844e0b2ce8d4479f1a0be82bfa4f9389386f00ec689dfa38d2171f55",
+    "importada": "2026-07-09T04:01:37.952Z"
+  },
+  {
+    "id": "FERP10770_2026-07-02",
+    "factura": "FERP10770",
+    "fecha": "2026-07-02",
+    "proveedor": "GENEFIX S.A.S",
+    "nitProveedor": "901451514",
+    "paciente": "DUBER SANTIAGO GONZALEZ ROJAS",
+    "documentoPaciente": "1123432079",
+    "medico": "RAMON ARTURO RODRIGUEZ",
+    "valor": 3628800,
+    "tipo": "compra",
+    "xmlPath": "FERP10770.xml",
+    "cufe": "4b647a299b497be3a592583a53a74cb8c0a7355e8276cbe0ff92627260e69d46fe48db733ecafe59ed86c840574b27af",
+    "importada": "2026-07-09T04:02:18.248Z"
   }
 ]

@@ -1,4 +1,4 @@
-import * as XLSX from 'xlsx-js-style'
+import XLSX from 'xlsx-js-style'
 import type { Conciliation } from '../models/invoice.js'
 
 function autoFitColumns(ws: XLSX.WorkSheet) {
