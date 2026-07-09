@@ -1,5 +1,28 @@
 # Registro de Cambios
 
+## v2.0.4 — Despliegue en Vercel (Auditoría/Demo)
+
+### Adaptación para Serverless Functions de Vercel
+- Creado `api/index.ts` como entry point serverless que exporta la app Express sin `app.listen()`
+- Creado `api/package.json` con dependencias necesarias (`express`, `cors`, `helmet`)
+- Creado `vercel.json` en la raíz con configuración completa:
+  - Build command: `npm run vercel-build` (solo frontend)
+  - Output directory: `frontend/dist`
+  - Rewrites para SPA: todas las rutas no-API a `/index.html`
+  - Runtime `@vercel/node@3` para la función serverless
+- Agregado script `vercel-build` en `package.json` raíz
+
+### Almacenamiento JSON en Vercel
+- `backend/src/storage/jsonStorage.ts`: `STORAGE_DIR` usa `/tmp/storage` cuando `VERCEL` está presente
+- `/tmp` es el único directorio escribible en Vercel, pero es **EFÍMERO**
+- Los datos se pierden entre cold starts de la función serverless
+
+### Notas
+- ⚠️ **Versión solo para auditoría y demostración.** Los datos no son persistentes.
+- Para producción se requiere migrar a Firebase Firestore.
+- El desarrollo local (`npm run dev`) funciona exactamente igual que antes.
+- No se modificó ninguna ruta, lógica de negocio ni diseño del frontend.
+
 ## v2.0.3 — Caché en memoria para JSON storage
 
 ### Optimización: reducción de 7 lecturas a 4 en carga inicial

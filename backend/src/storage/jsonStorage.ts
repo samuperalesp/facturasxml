@@ -5,7 +5,11 @@ import path from 'node:path'
 // TEMPORARY debug — remove before production
 import { traceRead, traceWrite } from './storageDebug.js'
 
-const STORAGE_DIR = path.resolve(process.cwd(), '../storage')
+// ⚠️ En Vercel: /tmp/storage es EFÍMERO — los datos se pierden en cold starts.
+// Modo auditoría/demo únicamente. Para producción migrar a Firebase Firestore.
+const STORAGE_DIR = process.env.VERCEL
+  ? '/tmp/storage'
+  : path.resolve(process.cwd(), '../storage')
 
 interface CacheEntry<T> {
   data?: T

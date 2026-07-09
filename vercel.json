@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm run vercel-build",
+  "outputDirectory": "frontend/dist",
+  "installCommand": "npm install && npm install --prefix frontend && npm install --prefix backend && npm install --prefix api",
+  "rewrites": [
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  ],
+  "functions": {
+    "api/index.ts": {
+      "runtime": "@vercel/node@3"
+    }
+  }
+}
