@@ -1,6 +1,18 @@
 import type { Invoice, Conciliation } from '../models/invoice'
 import type { AppConfig } from '../models/config'
 
+interface DashboardResponse {
+  compras: Invoice[]
+  ventas: Invoice[]
+  conciliaciones: Conciliation[]
+  resumen: {
+    comprasCargadas: number
+    ventasCargadas: number
+    conciliadas: number
+    pendientes: number
+  }
+}
+
 const API = '/api'
 
 async function uploadFiles(files: FileList, tipo: 'compra' | 'venta'): Promise<{ importados: number; total: number; errores?: string[] }> {
@@ -118,6 +130,15 @@ function exportReporte(tipo: string, mes?: number, anio?: number, filtros?: Reco
   downloadExport(`${API}/reportes/${tipo}?${params}`, `${tipo}_${new Date().toISOString().slice(0, 10)}.xlsx`)
 }
 
+async function getDashboard(mes?: number, anio?: number): Promise<DashboardResponse> {
+  const params = new URLSearchParams()
+  if (mes) params.set('mes', String(mes))
+  if (anio) params.set('anio', String(anio))
+  const res = await fetch(`${API}/dashboard?${params}`)
+  if (!res.ok) throw new Error('Error al obtener dashboard')
+  return res.json()
+}
+
 export const api = {
   uploadFiles,
   reconciliar,
@@ -127,6 +148,7 @@ export const api = {
   getListaMaestra,
   getResumen,
   getConfig,
+  getDashboard,
   exportListaMaestra,
   exportReporte,
   exportInformeMensual,

@@ -87,4 +87,35 @@ router.get('/resumen', async (req, res) => {
   }
 })
 
+router.get('/dashboard', async (req, res) => {
+  try {
+    const mes = req.query.mes ? Number(req.query.mes) : undefined
+    const anio = req.query.anio ? Number(req.query.anio) : undefined
+
+    const [compras, ventas, conciliaciones] = await Promise.all([
+      storage.getInvoicesByPeriod('compra', mes, anio),
+      storage.getInvoicesByPeriod('venta', mes, anio),
+      storage.getConciliaciones(mes, anio),
+    ])
+
+    const conciliadas = conciliaciones.filter(c => c.estado === 'conciliada').length
+    const pendientes = conciliaciones.filter(c => c.estado !== 'conciliada').length
+
+    res.json({
+      compras,
+      ventas,
+      conciliaciones,
+      resumen: {
+        comprasCargadas: compras.length,
+        ventasCargadas: ventas.length,
+        conciliadas,
+        pendientes,
+      },
+    })
+  } catch (e) {
+    console.error(e)
+    res.status(500).json({ error: 'Error al obtener dashboard' })
+  }
+})
+
 export default router

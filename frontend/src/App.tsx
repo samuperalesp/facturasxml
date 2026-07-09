@@ -22,16 +22,11 @@ function useApp() {
 
   const loadData = useCallback(async (m: number, a: number) => {
     try {
-      const [comp, vent, conc, res] = await Promise.all([
-        api.getCompras(m, a),
-        api.getVentas(m, a),
-        api.getConciliaciones(m, a),
-        api.getResumen(m, a),
-      ])
-      setCompras(comp)
-      setVentas(vent)
-      setConciliaciones(conc)
-      setResumen(res)
+      const data = await api.getDashboard(m, a)
+      setCompras(data.compras)
+      setVentas(data.ventas)
+      setConciliaciones(data.conciliaciones)
+      setResumen(data.resumen)
     } catch (e) {
       console.error(e)
     } finally {
