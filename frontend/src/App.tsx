@@ -22,14 +22,12 @@ function useApp() {
 
   const loadData = useCallback(async (m: number, a: number) => {
     try {
-      const [cfg, comp, vent, conc, res] = await Promise.all([
-        api.getConfig(),
+      const [comp, vent, conc, res] = await Promise.all([
         api.getCompras(m, a),
         api.getVentas(m, a),
         api.getConciliaciones(m, a),
         api.getResumen(m, a),
       ])
-      setConfig(cfg)
       setCompras(comp)
       setVentas(vent)
       setConciliaciones(conc)
@@ -39,6 +37,10 @@ function useApp() {
     } finally {
       setLoading(false)
     }
+  }, [])
+
+  useEffect(() => {
+    api.getConfig().then(setConfig).catch(console.error)
   }, [])
 
   useEffect(() => {
