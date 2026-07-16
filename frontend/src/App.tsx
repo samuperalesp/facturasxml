@@ -4,6 +4,10 @@ import type { Invoice, Conciliation } from './models/invoice'
 import type { AppConfig } from './models/config'
 import { api } from './services/api'
 import { getMonthName } from './utils/formatters'
+import { Sidebar } from './Sidebar'
+import type { SidebarView } from './Sidebar'
+import { ReportLayout } from './ReportLayout'
+import { ContabilidadView } from './ContabilidadView'
 
 type Tab = 'compras' | 'ventas' | 'conciliacion' | 'lista-maestra' | 'reportes'
 type SortDir = 'asc' | 'desc'
@@ -279,6 +283,7 @@ export default function App() {
     mes, setMes, anio, setAnio, loading, importing, handleImport, handleReconcile,
   } = useApp()
 
+  const [sidebarView, setSidebarView] = useState<SidebarView>('conciliacion')
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
   const showToast = (message: string, type: 'success' | 'error' = 'success') => setToast({ message, type })
 
@@ -316,113 +321,121 @@ export default function App() {
   ]
 
   if (loading) {
-    return <div className="app" style={{ textAlign: 'center', paddingTop: 80, color: 'var(--color-gray-400)' }}>Cargando...</div>
+    return <div className="app" style={{ textAlign: 'center', paddingTop: 80, color: 'var(--color-gray-400)', maxWidth: 1600, margin: '0 auto' }}>Cargando...</div>
   }
 
   return (
     <div className="app">
-      <div className="header">
-        <div>
-          <h1>Conciliador de Facturas XML</h1>
-          <div className="header-subtitle">{config.nombreEmpresa}</div>
-        </div>
-      </div>
+      <ReportLayout sidebar={<Sidebar activeView={sidebarView} onViewChange={setSidebarView} />}>
+        {sidebarView === 'conciliacion' && (
+          <>
+            <div className="header">
+              <div>
+                <h1>Conciliador de Facturas XML</h1>
+                <div className="header-subtitle">{config.nombreEmpresa}</div>
+              </div>
+            </div>
 
-      <div className="toolbar">
-        <div className="toolbar-left">
-          <label className="period-label">Período</label>
-          <select value={mes} onChange={e => setMes(Number(e.target.value))}>
-            {Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{getMonthName(i + 1)}</option>)}
-          </select>
-          <select value={anio} onChange={e => setAnio(Number(e.target.value))}>
-            {Array.from({ length: 5 }, (_, i) => {
-              const year = new Date().getFullYear() - 2 + i
-              return <option key={year} value={year}>{year}</option>
-            })}
-          </select>
-        </div>
-        <div className="toolbar-right">
-          <label className={`btn btn-primary ${importing ? 'disabled' : ''}`} style={{ cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.6 : 1 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            {importing ? 'Importando...' : 'Cargar XML Compras'}
-            <input type="file" accept=".xml" multiple style={{ display: 'none' }} disabled={importing} onChange={e => { if (e.target.files) { onImport(e.target.files, 'compra'); e.target.value = '' } }} />
-          </label>
-          <label className={`btn btn-primary ${importing ? 'disabled' : ''}`} style={{ cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.6 : 1 }}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
-            </svg>
-            {importing ? 'Importando...' : 'Cargar XML Ventas'}
-            <input type="file" accept=".xml" multiple style={{ display: 'none' }} disabled={importing} onChange={e => { if (e.target.files) { onImport(e.target.files, 'venta'); e.target.value = '' } }} />
-          </label>
-          <button className="btn btn-success" onClick={onReconcile} disabled={importing}>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-            </svg>
-            Conciliar Información
-          </button>
-        </div>
-      </div>
+            <div className="toolbar">
+              <div className="toolbar-left">
+                <label className="period-label">Período</label>
+                <select value={mes} onChange={e => setMes(Number(e.target.value))}>
+                  {Array.from({ length: 12 }, (_, i) => <option key={i + 1} value={i + 1}>{getMonthName(i + 1)}</option>)}
+                </select>
+                <select value={anio} onChange={e => setAnio(Number(e.target.value))}>
+                  {Array.from({ length: 5 }, (_, i) => {
+                    const year = new Date().getFullYear() - 2 + i
+                    return <option key={year} value={year}>{year}</option>
+                  })}
+                </select>
+              </div>
+              <div className="toolbar-right">
+                <label className={`btn btn-primary ${importing ? 'disabled' : ''}`} style={{ cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.6 : 1 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  {importing ? 'Importando...' : 'Cargar XML Compras'}
+                  <input type="file" accept=".xml" multiple style={{ display: 'none' }} disabled={importing} onChange={e => { if (e.target.files) { onImport(e.target.files, 'compra'); e.target.value = '' } }} />
+                </label>
+                <label className={`btn btn-primary ${importing ? 'disabled' : ''}`} style={{ cursor: importing ? 'not-allowed' : 'pointer', opacity: importing ? 0.6 : 1 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="17 8 12 3 7 8" /><line x1="12" y1="3" x2="12" y2="15" />
+                  </svg>
+                  {importing ? 'Importando...' : 'Cargar XML Ventas'}
+                  <input type="file" accept=".xml" multiple style={{ display: 'none' }} disabled={importing} onChange={e => { if (e.target.files) { onImport(e.target.files, 'venta'); e.target.value = '' } }} />
+                </label>
+                <button className="btn btn-success" onClick={onReconcile} disabled={importing}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                  </svg>
+                  Conciliar Información
+                </button>
+              </div>
+            </div>
 
-      <div className="cards-row">
-        <div className="card">
-          <div className="card-label">COMPRAS</div>
-          <div className="card-value">{fmt(totalCompras)}</div>
-          <div className="card-footer">
-            <FileText size={14} />
-            <span>{resumen.comprasCargadas} {resumen.comprasCargadas === 1 ? 'factura' : 'facturas'}</span>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-label">VENTAS</div>
-          <div className="card-value">{fmt(totalVentas)}</div>
-          <div className="card-footer">
-            <Receipt size={14} />
-            <span>{resumen.ventasCargadas} {resumen.ventasCargadas === 1 ? 'factura' : 'facturas'}</span>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-label">CONCILIADAS</div>
-          <div className="card-value green">{fmt(totalConciliado)}</div>
-          <div className="card-footer">
-            <BadgeCheck size={14} />
-            <span>{resumen.conciliadas} {resumen.conciliadas === 1 ? 'factura' : 'facturas'}</span>
-          </div>
-        </div>
-        <div className="card">
-          <div className="card-label">PENDIENTES</div>
-          <div className="card-value orange">{fmt(totalPendiente)}</div>
-          <div className="card-footer">
-            <TriangleAlert size={14} />
-            <span>{resumen.pendientes} {resumen.pendientes === 1 ? 'factura' : 'facturas'}</span>
-          </div>
-        </div>
-      </div>
+            <div className="cards-row">
+              <div className="card">
+                <div className="card-label">COMPRAS</div>
+                <div className="card-value">{fmt(totalCompras)}</div>
+                <div className="card-footer">
+                  <FileText size={14} />
+                  <span>{resumen.comprasCargadas} {resumen.comprasCargadas === 1 ? 'factura' : 'facturas'}</span>
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-label">VENTAS</div>
+                <div className="card-value">{fmt(totalVentas)}</div>
+                <div className="card-footer">
+                  <Receipt size={14} />
+                  <span>{resumen.ventasCargadas} {resumen.ventasCargadas === 1 ? 'factura' : 'facturas'}</span>
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-label">CONCILIADAS</div>
+                <div className="card-value green">{fmt(totalConciliado)}</div>
+                <div className="card-footer">
+                  <BadgeCheck size={14} />
+                  <span>{resumen.conciliadas} {resumen.conciliadas === 1 ? 'factura' : 'facturas'}</span>
+                </div>
+              </div>
+              <div className="card">
+                <div className="card-label">PENDIENTES</div>
+                <div className="card-value orange">{fmt(totalPendiente)}</div>
+                <div className="card-footer">
+                  <TriangleAlert size={14} />
+                  <span>{resumen.pendientes} {resumen.pendientes === 1 ? 'factura' : 'facturas'}</span>
+                </div>
+              </div>
+            </div>
 
-      <div className="tabs">
-        {tabs.map(tab => <TabButton key={tab.key} label={tab.label} active={activeTab === tab.key} onClick={() => setActiveTab(tab.key)} />)}
-      </div>
+            <div className="tabs">
+              {tabs.map(tab => <TabButton key={tab.key} label={tab.label} active={activeTab === tab.key} onClick={() => setActiveTab(tab.key)} />)}
+            </div>
 
-      {activeTab === 'compras' && <DataTable data={compras} columns={invoiceColumns} searchPlaceholder="Buscar en compras..." emptyMessage={`No hay compras para ${getMonthName(mes)} ${anio}`} />}
-      {activeTab === 'ventas' && <DataTable data={ventas} columns={invoiceColumns} searchPlaceholder="Buscar en ventas..." emptyMessage={`No hay ventas para ${getMonthName(mes)} ${anio}`} />}
-      {activeTab === 'conciliacion' && <DataTable data={conciliaciones} columns={conciliationColumns} searchPlaceholder="Buscar en conciliaciones..." emptyMessage="No hay conciliaciones. Importa XML y concilia." />}
-      {activeTab === 'lista-maestra' && (
-        <div>
-          <div style={{ marginBottom: 14 }}>
-            <button className="btn btn-success" onClick={() => api.exportListaMaestra(mes, anio)}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-              </svg>
-              Exportar Excel
-            </button>
-          </div>
-          <DataTable data={conciliaciones} columns={masterColumns} searchPlaceholder="Buscar en lista maestra..." emptyMessage="No hay datos para la lista maestra" />
-        </div>
-      )}
-      {activeTab === 'reportes' && <ReportsView conciliaciones={conciliaciones} compras={compras} ventas={ventas} mes={mes} anio={anio} />}
+            {activeTab === 'compras' && <DataTable data={compras} columns={invoiceColumns} searchPlaceholder="Buscar en compras..." emptyMessage={`No hay compras para ${getMonthName(mes)} ${anio}`} />}
+            {activeTab === 'ventas' && <DataTable data={ventas} columns={invoiceColumns} searchPlaceholder="Buscar en ventas..." emptyMessage={`No hay ventas para ${getMonthName(mes)} ${anio}`} />}
+            {activeTab === 'conciliacion' && <DataTable data={conciliaciones} columns={conciliationColumns} searchPlaceholder="Buscar en conciliaciones..." emptyMessage="No hay conciliaciones. Importa XML y concilia." />}
+            {activeTab === 'lista-maestra' && (
+              <div>
+                <div style={{ marginBottom: 14 }}>
+                  <button className="btn btn-success" onClick={() => api.exportListaMaestra(mes, anio)}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
+                    Exportar Excel
+                  </button>
+                </div>
+                <DataTable data={conciliaciones} columns={masterColumns} searchPlaceholder="Buscar en lista maestra..." emptyMessage="No hay datos para la lista maestra" />
+              </div>
+            )}
+            {activeTab === 'reportes' && <ReportsView conciliaciones={conciliaciones} compras={compras} ventas={ventas} mes={mes} anio={anio} />}
+          </>
+        )}
 
-      {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+        {sidebarView === 'contabilidad' && <ContabilidadView />}
+
+        {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
+      </ReportLayout>
     </div>
   )
 }
@@ -470,8 +483,8 @@ const subTabButtons: ReportSubTab[] = [
   'informe-mensual',
 ]
 
-function ReportsView({ conciliaciones, compras, ventas, mes, anio }: { conciliaciones: Conciliation[]; compras: Invoice[]; ventas: Invoice[]; mes: number; anio: number }) {
-  const [subTab, setSubTab] = useState<ReportSubTab>('todas')
+function ReportsView({ conciliaciones, compras, ventas, mes, anio, initialSubTab }: { conciliaciones: Conciliation[]; compras: Invoice[]; ventas: Invoice[]; mes: number; anio: number; initialSubTab?: ReportSubTab }) {
+  const [subTab, setSubTab] = useState<ReportSubTab>(initialSubTab || 'todas')
 
   const filtered = useMemo(() => {
     return conciliaciones.filter(c => {
