@@ -1,26 +1,23 @@
 import { useState } from 'react'
 import {
-  Building2, TrendingUp, FileSpreadsheet, BookOpen, BookMarked,
-  FileText, ShoppingCart, Package, Users, CreditCard, Download,
+  Landmark, TrendingUp, BookOpen, BookMarked, FileText,
+  HandCoins, Wallet, Package, CircleDollarSign, Download,
 } from 'lucide-react'
 import * as XLSX from 'xlsx'
 import { getMonthName } from './utils/formatters'
 
-type ReportType = 'monetario' | 'cantidad'
-
-interface ReportCardData {
-  id: string
-  titulo: string
-  valorPrincipal: string
-  valorSecundario: string
-  tipoReporte: ReportType
+interface AccountingReport {
+  title: string
+  value: string
+  secondary: string
+  isMonetary: boolean
   icon: React.ComponentType<{ size?: number }>
   exportFn: (mes: number, anio: number) => void
 }
 
 interface ReportSection {
-  titulo: string
-  items: ReportCardData[]
+  title: string
+  items: AccountingReport[]
 }
 
 function buildExportFn(reportName: string) {
@@ -42,28 +39,27 @@ function buildExportFn(reportName: string) {
 
 const sections: ReportSection[] = [
   {
-    titulo: 'INFORMACIÓN FINANCIERA',
+    title: 'INFORMACIÓN FINANCIERA',
     items: [
-      { id: 'balance-general', icon: Building2, titulo: 'Balance General', valorPrincipal: '$ 1.250.000.000', valorSecundario: '185 cuentas', tipoReporte: 'monetario', exportFn: buildExportFn('Balance General') },
-      { id: 'estado-resultados', icon: TrendingUp, titulo: 'Estado de Resultados', valorPrincipal: '$ 235.520.000', valorSecundario: 'Utilidad del período', tipoReporte: 'monetario', exportFn: buildExportFn('Estado de Resultados') },
-      { id: 'balance-prueba', icon: FileSpreadsheet, titulo: 'Balance de Prueba', valorPrincipal: '185 cuentas', valorSecundario: '100% conciliadas', tipoReporte: 'cantidad', exportFn: buildExportFn('Balance de Prueba') },
+      { title: 'Balance General', value: '$ 1.245.650.000', secondary: '132 cuentas', isMonetary: true, icon: Landmark, exportFn: buildExportFn('Balance General') },
+      { title: 'Estado de Resultados', value: '$ 352.120.000', secondary: 'Utilidad del período', isMonetary: true, icon: TrendingUp, exportFn: buildExportFn('Estado de Resultados') },
     ],
   },
   {
-    titulo: 'LIBROS CONTABLES',
+    title: 'LIBROS CONTABLES',
     items: [
-      { id: 'libro-diario', icon: BookOpen, titulo: 'Libro Diario', valorPrincipal: '2.580 movimientos', valorSecundario: 'Período contable', tipoReporte: 'cantidad', exportFn: buildExportFn('Libro Diario') },
-      { id: 'libro-mayor', icon: BookMarked, titulo: 'Libro Mayor', valorPrincipal: '185 cuentas', valorSecundario: 'Agrupación por cuenta', tipoReporte: 'cantidad', exportFn: buildExportFn('Libro Mayor') },
-      { id: 'auxiliares', icon: FileText, titulo: 'Auxiliares Contables', valorPrincipal: '320 auxiliares', valorSecundario: 'Detalle de movimientos', tipoReporte: 'cantidad', exportFn: buildExportFn('Auxiliares Contables') },
+      { title: 'Libro Diario', value: '8.542', secondary: 'Movimientos', isMonetary: false, icon: BookOpen, exportFn: buildExportFn('Libro Diario') },
+      { title: 'Libro Mayor', value: '154', secondary: 'Cuentas con movimiento', isMonetary: false, icon: BookMarked, exportFn: buildExportFn('Libro Mayor') },
+      { title: 'Auxiliares', value: '328', secondary: 'Subcuentas', isMonetary: false, icon: FileText, exportFn: buildExportFn('Auxiliares') },
     ],
   },
   {
-    titulo: 'INDICADORES',
+    title: 'INDICADORES',
     items: [
-      { id: 'ventas', icon: ShoppingCart, titulo: 'Ventas', valorPrincipal: '$ 125.450.320', valorSecundario: '1.285 facturas', tipoReporte: 'monetario', exportFn: buildExportFn('Ventas') },
-      { id: 'compras', icon: Package, titulo: 'Compras', valorPrincipal: '$ 82.350.220', valorSecundario: '845 facturas', tipoReporte: 'monetario', exportFn: buildExportFn('Compras') },
-      { id: 'cuentas-cobrar', icon: Users, titulo: 'Cuentas por Cobrar', valorPrincipal: '$ 52.320.000', valorSecundario: '85 documentos', tipoReporte: 'monetario', exportFn: buildExportFn('Cuentas por Cobrar') },
-      { id: 'cuentas-pagar', icon: CreditCard, titulo: 'Cuentas por Pagar', valorPrincipal: '$ 28.500.000', valorSecundario: '42 documentos', tipoReporte: 'monetario', exportFn: buildExportFn('Cuentas por Pagar') },
+      { title: 'Cuentas por Cobrar', value: '$ 145.000.000', secondary: '26 clientes', isMonetary: true, icon: HandCoins, exportFn: buildExportFn('Cuentas por Cobrar') },
+      { title: 'Cuentas por Pagar', value: '$ 82.000.000', secondary: '15 proveedores', isMonetary: true, icon: Wallet, exportFn: buildExportFn('Cuentas por Pagar') },
+      { title: 'Inventarios', value: '$ 568.000.000', secondary: '214 referencias', isMonetary: true, icon: Package, exportFn: buildExportFn('Inventarios') },
+      { title: 'Costos', value: '$ 128.000.000', secondary: 'Centro de costos', isMonetary: true, icon: CircleDollarSign, exportFn: buildExportFn('Costos') },
     ],
   },
 ]
@@ -98,11 +94,11 @@ export function ContabilidadView() {
       </div>
 
       {sections.map(section => (
-        <div className="report-section" key={section.titulo}>
-          <h2 className="report-section-title">{section.titulo}</h2>
+        <div className="report-section" key={section.title}>
+          <h2 className="report-section-title">{section.title}</h2>
           <div className="report-section-grid">
             {section.items.map(card => (
-              <ReportCard key={card.id} card={card} mes={mes} anio={anio} />
+              <ReportCard key={card.title} card={card} mes={mes} anio={anio} />
             ))}
           </div>
         </div>
@@ -111,19 +107,19 @@ export function ContabilidadView() {
   )
 }
 
-function ReportCard({ card, mes, anio }: { card: ReportCardData; mes: number; anio: number }) {
+function ReportCard({ card, mes, anio }: { card: AccountingReport; mes: number; anio: number }) {
   const Icon = card.icon
   return (
     <div className="card report-card-dash">
       <div className="card-label report-card-dash-label">
-        <span className="report-card-dash-icon"><Icon size={14} /></span>
-        {card.titulo}
+        <span className="report-card-dash-icon"><Icon size={16} /></span>
+        {card.title}
       </div>
-      <div className={`card-value ${card.tipoReporte === 'monetario' ? '' : 'card-value-md'}`}>
-        {card.valorPrincipal}
+      <div className={`report-card-dash-value ${card.isMonetary ? '' : 'report-card-dash-value--sm'}`}>
+        {card.value}
       </div>
       <div className="card-footer report-card-dash-footer">
-        <span>{card.valorSecundario}</span>
+        <span className="report-card-dash-secondary">{card.secondary}</span>
         <button className="report-card-export" onClick={() => card.exportFn(mes, anio)}>
           <Download size={12} />
           Exportar

@@ -1,4 +1,4 @@
-import { GitCompareArrows, Coins } from 'lucide-react'
+import { ArrowLeftRight, ChartNoAxesColumnIncreasing } from 'lucide-react'
 
 export type SidebarView = 'conciliacion' | 'contabilidad'
 
@@ -11,7 +11,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
   return (
     <aside className="sidebar">
       <div className="sidebar-header">
-        <Coins size={22} />
+        <ChartNoAxesColumnIncreasing size={22} />
         <span className="sidebar-brand">Centro de Reportes</span>
       </div>
 
@@ -20,7 +20,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
           className={`sidebar-item ${activeView === 'conciliacion' ? 'active' : ''}`}
           onClick={() => onViewChange('conciliacion')}
         >
-          <GitCompareArrows size={18} />
+          <ArrowLeftRight size={20} />
           <span>Conciliación</span>
         </button>
 
@@ -28,7 +28,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
           className={`sidebar-item ${activeView === 'contabilidad' ? 'active' : ''}`}
           onClick={() => onViewChange('contabilidad')}
         >
-          <Coins size={18} />
+          <ChartNoAxesColumnIncreasing size={20} />
           <span>Reportes Contables</span>
         </button>
       </nav>

@@ -600,35 +600,37 @@ tr:hover td {
   padding: 16px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
 }
 
 .sidebar-item {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   width: 100%;
-  padding: 10px 14px;
+  padding: 12px 16px;
   border: none;
   background: transparent;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-size: 13px;
   font-weight: 500;
-  color: var(--color-gray-600);
+  color: var(--color-gray-500);
   cursor: pointer;
   transition: all var(--transition);
   text-align: left;
+  position: relative;
 }
 
 .sidebar-item:hover {
-  background: var(--color-gray-50);
-  color: var(--color-gray-800);
+  background: var(--color-blue-50);
+  color: var(--color-blue-600);
 }
 
 .sidebar-item.active {
   background: var(--color-blue-50);
   color: var(--color-blue-600);
   font-weight: 600;
+  box-shadow: inset 3px 0 0 var(--color-blue-500);
 }
 
 .sidebar-item svg {
@@ -681,7 +683,7 @@ tr:hover td {
 /* ============= REPORTES CONTABLES ============= */
 
 .report-section {
-  margin-bottom: 28px;
+  margin-bottom: 32px;
 }
 
 .report-section:last-child {
@@ -693,28 +695,28 @@ tr:hover td {
   font-weight: 600;
   color: var(--color-gray-400);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 12px;
+  letter-spacing: 0.6px;
+  margin-bottom: 14px;
 }
 
 .report-section-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-  gap: 14px;
-}
-
-.card-value-md {
-  font-size: 20px;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 16px;
 }
 
 .report-card-dash {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 20px;
 }
 
 .report-card-dash-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 10px;
 }
 
 .report-card-dash-icon {
@@ -724,32 +726,54 @@ tr:hover td {
   color: var(--color-blue-500);
 }
 
+.report-card-dash-value {
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--color-gray-800);
+  letter-spacing: -0.8px;
+  line-height: 1.15;
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+.report-card-dash-value--sm {
+  font-size: 28px;
+  letter-spacing: -0.5px;
+}
+
+.report-card-dash-secondary {
+  font-size: 12px;
+  color: var(--color-gray-400);
+}
+
 .report-card-dash-footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: auto;
 }
 
 .report-card-export {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
+  gap: 5px;
+  padding: 5px 12px;
   border: 1px solid var(--color-gray-200);
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 500;
-  color: var(--color-gray-500);
+  color: var(--color-blue-600);
   background: var(--color-gray-50);
   cursor: pointer;
   transition: all var(--transition);
   line-height: 1;
+  box-shadow: var(--shadow-sm);
 }
 
 .report-card-export:hover {
-  background: var(--color-gray-100);
-  border-color: var(--color-gray-300);
-  color: var(--color-gray-700);
+  background: var(--color-blue-50);
+  border-color: var(--color-blue-200);
+  color: var(--color-blue-700);
 }
 
 /* ============= RESPONSIVE ============= */
