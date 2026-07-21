@@ -646,10 +646,8 @@ tr:hover td {
 /* ============= CONTABILIDAD PLACEHOLDER ============= */
 
 .contabilidad-view {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 60vh;
+  display: block;
+  min-height: auto;
 }
 
 .contabilidad-placeholder {
@@ -678,6 +676,80 @@ tr:hover td {
 .contabilidad-placeholder p {
   font-size: 14px;
   color: var(--color-gray-400);
+}
+
+/* ============= REPORTES CONTABLES ============= */
+
+.report-section {
+  margin-bottom: 28px;
+}
+
+.report-section:last-child {
+  margin-bottom: 0;
+}
+
+.report-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-gray-400);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+
+.report-section-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 14px;
+}
+
+.card-value-md {
+  font-size: 20px;
+}
+
+.report-card-dash {
+  position: relative;
+}
+
+.report-card-dash-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-card-dash-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-blue-500);
+}
+
+.report-card-dash-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.report-card-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid var(--color-gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-gray-500);
+  background: var(--color-gray-50);
+  cursor: pointer;
+  transition: all var(--transition);
+  line-height: 1;
+}
+
+.report-card-export:hover {
+  background: var(--color-gray-100);
+  border-color: var(--color-gray-300);
+  color: var(--color-gray-700);
 }
 
 /* ============= RESPONSIVE ============= */
@@ -718,6 +790,7 @@ tr:hover td {
     padding: 12px;
   }
   .cards-row { grid-template-columns: repeat(2, 1fr); }
+  .report-section-grid { grid-template-columns: repeat(2, 1fr); }
   .toolbar { flex-direction: column; align-items: stretch; }
   .toolbar-right { flex-wrap: wrap; }
   .report-toolbar { flex-direction: column; align-items: stretch; }

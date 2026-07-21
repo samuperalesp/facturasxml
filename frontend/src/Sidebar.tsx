@@ -29,7 +29,7 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
           onClick={() => onViewChange('contabilidad')}
         >
           <Coins size={18} />
-          <span>Contabilidad</span>
+          <span>Reportes Contables</span>
         </button>
       </nav>
     </aside>
