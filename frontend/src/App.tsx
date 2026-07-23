@@ -8,6 +8,7 @@ import { Sidebar } from './Sidebar'
 import type { SidebarView } from './Sidebar'
 import { ReportLayout } from './ReportLayout'
 import { ContabilidadView } from './ContabilidadView'
+import { FacturacionView } from './FacturacionView'
 
 type Tab = 'compras' | 'ventas' | 'conciliacion' | 'lista-maestra' | 'reportes'
 type SortDir = 'asc' | 'desc'
@@ -433,6 +434,7 @@ export default function App() {
         )}
 
         {sidebarView === 'contabilidad' && <ContabilidadView />}
+        {sidebarView === 'facturacion' && <FacturacionView />}
 
         {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
       </ReportLayout>

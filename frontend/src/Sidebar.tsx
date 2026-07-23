@@ -1,6 +1,6 @@
-import { ArrowLeftRight, ChartNoAxesColumnIncreasing } from 'lucide-react'
+import { ArrowLeftRight, ChartNoAxesColumnIncreasing, Receipt } from 'lucide-react'
 
-export type SidebarView = 'conciliacion' | 'contabilidad'
+export type SidebarView = 'conciliacion' | 'contabilidad' | 'facturacion'
 
 interface SidebarProps {
   activeView: SidebarView
@@ -30,6 +30,14 @@ export function Sidebar({ activeView, onViewChange }: SidebarProps) {
         >
           <ChartNoAxesColumnIncreasing size={20} />
           <span>Reportes Contables</span>
+        </button>
+
+        <button
+          className={`sidebar-item ${activeView === 'facturacion' ? 'active' : ''}`}
+          onClick={() => onViewChange('facturacion')}
+        >
+          <Receipt size={20} />
+          <span>Reportes de Facturación</span>
         </button>
       </nav>
     </aside>
